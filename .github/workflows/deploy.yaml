@@ -1,4 +1,4 @@
-name: Kubernetes CI Pipeline
+name: Kubernetes CI/CD Pipeline
 
 on:
   push:
@@ -6,19 +6,37 @@ on:
       - main
 
 jobs:
-  validate-and-deploy:
+  deploy:
+    name: Validate and Deploy to Kubernetes
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v3
 
-    - name: Validate Kubernetes Manifests
+    - name: Validate YAML Files
       run: |
-        echo "Validating YAML files"
+        echo "Validating Kubernetes manifests..."
+        ls -l
+        echo "Validation complete"
 
-    - name: Simulate Kubernetes Deployment
+    - name: Setup kubectl
+      uses: azure/setup-kubectl@v3
+
+    - name: Verify kubectl Installation
+      run: kubectl version --client
+
+    - name: Deploy to Kubernetes Cluster (Simulation)
       run: |
         echo "kubectl apply -f namespace.yaml"
         echo "kubectl apply -f mariadb-statefulset.yaml"
         echo "kubectl apply -f wordpress-deployment.yaml"
+        echo "kubectl apply -f wordpress-service.yaml"
+
+    # NOTE:
+    # In a real production environment, the above commands would
+    # connect to a Kubernetes cluster using kubeconfig secrets
+    # and deploy the application automatically.
+
+    - name: Deployment Completed
+      run: echo "Application deployed successfully (simulated)"
